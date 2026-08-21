@@ -204,47 +204,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ---------------------------------------------------
-     MODE SWITCH — CUSTOMER / STUDIO PARTNER
-  --------------------------------------------------- */
-  const customerApp = document.getElementById('customerApp');
-  const partnerApp = document.getElementById('partnerApp');
-  const exitPartnerBtn = document.getElementById('exitPartnerBtn');
-
-  // Partner portal is intentionally hidden from the customer UI.
-  // The login page sets a session flag before opening this view.
-  const PARTNER_SESSION_KEY = 'hgs_partner_authenticated';
-
-  function isPartnerAuthenticated() {
-    return sessionStorage.getItem(PARTNER_SESSION_KEY) === 'true';
-  }
-
-  function setMode(mode) {
-    if (mode === 'partner' && isPartnerAuthenticated()) {
-      customerApp.classList.add('hidden');
-      partnerApp.classList.remove('hidden');
-      renderPartnerDashboard();
-      window.scrollTo(0, 0);
-      return;
-    }
-    partnerApp.classList.add('hidden');
-    customerApp.classList.remove('hidden');
-    window.scrollTo(0, 0);
-  }
-
-  if (window.location.hash === '#partner' && isPartnerAuthenticated()) {
-    setMode('partner');
-  } else {
-    setMode('customer');
-  }
-
-  if (exitPartnerBtn) {
-    exitPartnerBtn.addEventListener('click', () => {
-      sessionStorage.removeItem(PARTNER_SESSION_KEY);
-      window.location.href = 'index.html';
-    });
-  }
-
-  /* ---------------------------------------------------
      RENDER: SERVICES (customer landing grid)
   --------------------------------------------------- */
   const servicesGrid = document.getElementById('servicesGrid');
@@ -876,7 +835,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (action === 'complete') updateBooking(id, { status: 'completed' });
     if (action === 'cancel') updateBooking(id, { status: 'cancelled' });
     if (action === 'reinstate') updateBooking(id, { status: 'confirmed' });
-    renderPartnerDashboard();
     renderMyBookings();
   });
 
@@ -1032,3 +990,46 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 });
+
+
+/* =========================================================
+   PREMIUM 3D TILT — pointer devices only
+   ========================================================= */
+(function initPremium3D() {
+  if (!window.matchMedia('(pointer:fine)').matches) return;
+
+  const selectors = '.service-card, .barber-card, .testimonial-card, .booking-card, .contact-card';
+  document.querySelectorAll(selectors).forEach(card => {
+    card.addEventListener('pointermove', e => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - .5;
+      const y = (e.clientY - r.top) / r.height - .5;
+      card.style.transform =
+        `perspective(900px) translateY(-7px) rotateX(${(-y * 5).toFixed(2)}deg) rotateY(${(x * 5).toFixed(2)}deg) translateZ(10px)`;
+    });
+    card.addEventListener('pointerleave', () => {
+      card.style.transform = '';
+    });
+  });
+})();
+
+
+(function initHeroParallax3D() {
+  if (!window.matchMedia('(pointer:fine)').matches) return;
+  const hero = document.querySelector('.hero');
+  const content = document.querySelector('.hero-content');
+  const media = document.querySelector('.hero-media');
+  if (!hero || !content || !media) return;
+
+  hero.addEventListener('pointermove', e => {
+    const r = hero.getBoundingClientRect();
+    const x = (e.clientX-r.left)/r.width-.5;
+    const y = (e.clientY-r.top)/r.height-.5;
+    content.style.transform = `translate3d(${x*-8}px,${y*-5}px,25px) rotateY(${x*-2}deg)`;
+    media.style.transform = `translate3d(${x*10}px,${y*7}px,45px) rotateY(${x*3}deg) rotateX(${y*-2}deg)`;
+  });
+  hero.addEventListener('pointerleave', () => {
+    content.style.transform = '';
+    media.style.transform = '';
+  });
+})();

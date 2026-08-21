@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="customer-site">
 
 <!-- ===== LOADING SCREEN ===== -->
 <div class="loader" id="loader">
@@ -380,7 +380,7 @@
         <li><i class="fa-solid fa-phone"></i> +91 98765 43210</li>
         <li><i class="fa-solid fa-envelope"></i> hello@harigroomingstudio.com</li>
       </ul>
-      <a href="partner-login.html" class="partner-login-link"><i class="fa-solid fa-lock"></i> Studio Partner Login</a>
+      <a href="partner-login.html" class="partner-login-link"><i class="fa-solid fa-lock"></i>  Login</a>
     </div>
   </div>
   <div class="footer-bottom">
@@ -393,87 +393,7 @@
 
 </div><!-- /#customerApp -->
 
-<!-- =========================================================
-     STUDIO PARTNER APP
-========================================================= -->
-<div id="partnerApp" class="hidden">
-  <header class="partner-header">
-    <div class="partner-header-left">
-      <span class="brand-mark"><i class="fa-solid fa-scissors"></i></span>
-      <div class="brand-text">HARI<span>GROOMING STUDIO · PARTNER</span></div>
-    </div>
-    <div class="partner-header-right">
-      <span class="partner-demo-badge"><i class="fa-solid fa-shield-halved"></i> Partner Portal</span>
-      <button class="btn btn-outline" id="exitPartnerBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
-    </div>
-  </header>
-
-  <div class="partner-shell">
-    <nav class="partner-sidebar" id="partnerSidebar">
-      <button class="partner-tab active" data-tab="overview"><i class="fa-solid fa-gauge-high"></i> Overview</button>
-      <button class="partner-tab" data-tab="bookings"><i class="fa-solid fa-calendar-check"></i> Bookings</button>
-      <button class="partner-tab" data-tab="calendar"><i class="fa-solid fa-calendar-days"></i> Calendar</button>
-      <button class="partner-tab" data-tab="services"><i class="fa-solid fa-scissors"></i> Services</button>
-      <button class="partner-tab" data-tab="barbers"><i class="fa-solid fa-user-tie"></i> Barbers</button>
-      <button class="partner-tab" data-tab="customers"><i class="fa-solid fa-users"></i> Customers</button>
-      <button class="partner-tab" data-tab="settings"><i class="fa-solid fa-gear"></i> Settings</button>
-    </nav>
-
-    <main class="partner-main">
-
-      <section class="partner-view active" data-view="overview">
-        <h2 class="partner-view-title">Studio Overview</h2>
-        <div class="partner-cards" id="overviewCards"></div>
-        <h3 class="partner-sub-title">Recent Bookings</h3>
-        <div class="partner-bookings-list" id="overviewRecentBookings"></div>
-      </section>
-
-      <section class="partner-view" data-view="bookings">
-        <h2 class="partner-view-title">Manage Bookings</h2>
-        <div class="partner-filter-row">
-          <button class="chip active" data-filter="all">All</button>
-          <button class="chip" data-filter="confirmed">Confirmed</button>
-          <button class="chip" data-filter="completed">Completed</button>
-          <button class="chip" data-filter="cancelled">Cancelled</button>
-        </div>
-        <div class="partner-bookings-list" id="partnerBookingsList"></div>
-      </section>
-
-      <section class="partner-view" data-view="calendar">
-        <h2 class="partner-view-title">Weekly Calendar</h2>
-        <div class="calendar-week" id="calendarWeek"></div>
-      </section>
-
-      <section class="partner-view" data-view="services">
-        <h2 class="partner-view-title">Manage Services</h2>
-        <div class="partner-service-list" id="partnerServiceList"></div>
-      </section>
-
-      <section class="partner-view" data-view="barbers">
-        <h2 class="partner-view-title">Manage Barbers</h2>
-        <div class="partner-barber-list" id="partnerBarberList"></div>
-      </section>
-
-      <section class="partner-view" data-view="customers">
-        <h2 class="partner-view-title">Customers</h2>
-        <div class="partner-customer-list" id="partnerCustomerList"></div>
-      </section>
-
-      <section class="partner-view" data-view="settings">
-        <h2 class="partner-view-title">Studio Settings</h2>
-        <form class="settings-form" id="settingsForm">
-          <div class="form-group"><label>Studio Name</label><input type="text" id="setStudioName"></div>
-          <div class="form-group"><label>Address</label><input type="text" id="setAddress"></div>
-          <div class="form-group"><label>Phone</label><input type="text" id="setPhone"></div>
-          <div class="form-group"><label>Opening Hours</label><input type="text" id="setHours"></div>
-          <button type="submit" class="btn btn-gold">Save Settings</button>
-          <span class="save-confirm" id="settingsSaved">Saved!</span>
-        </form>
-      </section>
-
-    </main>
-  </div>
-</div>
+<!--  is intentionally separated into partner-login.html -->
 
 <script src="script.js"></script>
 </body>
