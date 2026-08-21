@@ -208,29 +208,41 @@ document.addEventListener('DOMContentLoaded', () => {
   --------------------------------------------------- */
   const customerApp = document.getElementById('customerApp');
   const partnerApp = document.getElementById('partnerApp');
-  const modeCustomerBtn = document.getElementById('modeCustomerBtn');
-  const modePartnerBtn = document.getElementById('modePartnerBtn');
   const exitPartnerBtn = document.getElementById('exitPartnerBtn');
 
+  // Partner portal is intentionally hidden from the customer UI.
+  // The login page sets a session flag before opening this view.
+  const PARTNER_SESSION_KEY = 'hgs_partner_authenticated';
+
+  function isPartnerAuthenticated() {
+    return sessionStorage.getItem(PARTNER_SESSION_KEY) === 'true';
+  }
+
   function setMode(mode) {
-    if (mode === 'partner') {
+    if (mode === 'partner' && isPartnerAuthenticated()) {
       customerApp.classList.add('hidden');
       partnerApp.classList.remove('hidden');
-      modeCustomerBtn.classList.remove('active');
-      modePartnerBtn.classList.add('active');
       renderPartnerDashboard();
       window.scrollTo(0, 0);
-    } else {
-      partnerApp.classList.add('hidden');
-      customerApp.classList.remove('hidden');
-      modePartnerBtn.classList.remove('active');
-      modeCustomerBtn.classList.add('active');
-      window.scrollTo(0, 0);
+      return;
     }
+    partnerApp.classList.add('hidden');
+    customerApp.classList.remove('hidden');
+    window.scrollTo(0, 0);
   }
-  modeCustomerBtn.addEventListener('click', () => setMode('customer'));
-  modePartnerBtn.addEventListener('click', () => setMode('partner'));
-  exitPartnerBtn.addEventListener('click', () => setMode('customer'));
+
+  if (window.location.hash === '#partner' && isPartnerAuthenticated()) {
+    setMode('partner');
+  } else {
+    setMode('customer');
+  }
+
+  if (exitPartnerBtn) {
+    exitPartnerBtn.addEventListener('click', () => {
+      sessionStorage.removeItem(PARTNER_SESSION_KEY);
+      window.location.href = 'index.html';
+    });
+  }
 
   /* ---------------------------------------------------
      RENDER: SERVICES (customer landing grid)
@@ -658,10 +670,19 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function playSuccessAnimation(booking) {
-    successOverlay.classList.add('active');
+    successOverlay.classList.remove('active');
     successCheck.classList.remove('show');
     successResult.classList.remove('show');
+    void successOverlay.offsetWidth;
+    successOverlay.classList.add('active');
     document.body.style.overflow = 'hidden';
+
+    const stage = document.getElementById('successStage');
+    if (stage) {
+      stage.classList.remove('cutting');
+      void stage.offsetWidth;
+      stage.classList.add('cutting');
+    }
 
     document.getElementById('successId').textContent = `Booking ID: ${booking.id}`;
     document.getElementById('successDetails').innerHTML = `
@@ -673,12 +694,14 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
 
     // Stage timing: scissors snip ~1.1s, then check, then result card
-    setTimeout(() => successCheck.classList.add('show'), 1100);
-    setTimeout(() => successResult.classList.add('show'), 1550);
+    setTimeout(() => successCheck.classList.add('show'), 1500);
+    setTimeout(() => successResult.classList.add('show'), 2050);
   }
 
   document.getElementById('viewBookingBtn').addEventListener('click', () => {
     successOverlay.classList.remove('active');
+    const closingStage = document.getElementById('successStage');
+    if (closingStage) closingStage.classList.remove('cutting');
     document.body.style.overflow = '';
     resetWizard();
     renderMyBookings();
@@ -686,6 +709,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.getElementById('backHomeBtn').addEventListener('click', () => {
     successOverlay.classList.remove('active');
+    const closingStage = document.getElementById('successStage');
+    if (closingStage) closingStage.classList.remove('cutting');
     document.body.style.overflow = '';
     resetWizard();
     document.getElementById('home').scrollIntoView({ behavior: 'smooth' });
