@@ -182,42 +182,30 @@
 
     <!-- Step indicator -->
     <div class="wizard-steps" id="wizardSteps">
-      <div class="wizard-step active" data-step="1"><span class="wizard-dot">1</span><span class="wizard-label">Service</span></div>
-      <div class="wizard-line"></div>
-      <div class="wizard-step" data-step="2"><span class="wizard-dot">2</span><span class="wizard-label">Barber</span></div>
-      <div class="wizard-line"></div>
-      <div class="wizard-step" data-step="3"><span class="wizard-dot">3</span><span class="wizard-label">Date</span></div>
-      <div class="wizard-line"></div>
-      <div class="wizard-step" data-step="4"><span class="wizard-dot">4</span><span class="wizard-label">Time</span></div>
-      <div class="wizard-line"></div>
-      <div class="wizard-step" data-step="5"><span class="wizard-dot">5</span><span class="wizard-label">Details</span></div>
-      <div class="wizard-line"></div>
-      <div class="wizard-step" data-step="6"><span class="wizard-dot">6</span><span class="wizard-label">Confirm</span></div>
+      <div class="wizard-step active" data-step="1"><span class="wizard-dot">1</span><span class="wizard-label">Service &amp; Barber</span></div>
+      <div class="wizard-line"><span class="wizard-line-fill"></span></div>
+      <div class="wizard-step" data-step="2"><span class="wizard-dot">2</span><span class="wizard-label">Date &amp; Time</span></div>
+      <div class="wizard-line"><span class="wizard-line-fill"></span></div>
+      <div class="wizard-step" data-step="3"><span class="wizard-dot">3</span><span class="wizard-label">Details &amp; Confirm</span></div>
     </div>
 
     <div class="wizard-panel-wrap">
 
-      <!-- STEP 1: SERVICE -->
+      <!-- STEP 1: SERVICE + BARBER -->
       <div class="wizard-panel active" data-panel="1">
-        <h3 class="wizard-panel-title">Choose a Service</h3>
+        <h3 class="wizard-panel-title"><i class="fa-solid fa-scissors panel-icon"></i> Choose a Service</h3>
         <div class="picker-grid" id="wizardServiceGrid"></div>
-      </div>
 
-      <!-- STEP 2: BARBER -->
-      <div class="wizard-panel" data-panel="2">
-        <h3 class="wizard-panel-title">Choose Your Barber</h3>
+        <h3 class="wizard-panel-title panel-title-spaced"><i class="fa-solid fa-user-tie panel-icon"></i> Choose Your Barber</h3>
         <div class="picker-grid barber-picker-grid" id="wizardBarberGrid"></div>
       </div>
 
-      <!-- STEP 3: DATE -->
-      <div class="wizard-panel" data-panel="3">
-        <h3 class="wizard-panel-title">Choose a Date</h3>
+      <!-- STEP 2: DATE + TIME -->
+      <div class="wizard-panel" data-panel="2">
+        <h3 class="wizard-panel-title"><i class="fa-solid fa-calendar-days panel-icon"></i> Choose a Date</h3>
         <div class="date-strip" id="dateStrip"></div>
-      </div>
 
-      <!-- STEP 4: TIME -->
-      <div class="wizard-panel" data-panel="4">
-        <h3 class="wizard-panel-title">Choose a Time Slot</h3>
+        <h3 class="wizard-panel-title panel-title-spaced"><i class="fa-regular fa-clock panel-icon"></i> Choose a Time Slot</h3>
         <div class="slot-legend">
           <span><i class="dot dot-available"></i> Available</span>
           <span><i class="dot dot-selected"></i> Selected</span>
@@ -226,32 +214,31 @@
         <div id="slotGroups"></div>
       </div>
 
-      <!-- STEP 5: DETAILS -->
-      <div class="wizard-panel" data-panel="5">
-        <h3 class="wizard-panel-title">Your Details</h3>
+      <!-- STEP 3: DETAILS + SUMMARY + CONFIRM -->
+      <div class="wizard-panel" data-panel="3">
+        <h3 class="wizard-panel-title"><i class="fa-solid fa-user panel-icon"></i> Your Details</h3>
         <form id="detailsForm" novalidate class="details-form">
-          <div class="form-group">
-            <label for="custName">Full Name <span>*</span></label>
-            <input type="text" id="custName" placeholder="e.g. Arjun Mehta" autocomplete="name">
-            <span class="error-msg" id="err-custName"></span>
-          </div>
-          <div class="form-group">
-            <label for="custPhone">Mobile Number <span>*</span></label>
-            <input type="tel" id="custPhone" placeholder="e.g. 9876543210" autocomplete="tel">
-            <span class="error-msg" id="err-custPhone"></span>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="custName">Full Name <span>*</span></label>
+              <input type="text" id="custName" placeholder="e.g. Arjun Mehta" autocomplete="name">
+              <span class="error-msg" id="err-custName"></span>
+            </div>
+            <div class="form-group">
+              <label for="custPhone">Mobile Number <span>*</span></label>
+              <input type="tel" id="custPhone" placeholder="e.g. 9876543210" autocomplete="tel">
+              <span class="error-msg" id="err-custPhone"></span>
+            </div>
           </div>
           <div class="form-group">
             <label for="custMessage">Additional Message</label>
-            <textarea id="custMessage" rows="3" placeholder="Anything specific you'd like us to know? (optional)"></textarea>
+            <textarea id="custMessage" rows="2" placeholder="Anything specific you'd like us to know? (optional)"></textarea>
           </div>
         </form>
-      </div>
 
-      <!-- STEP 6: CONFIRM -->
-      <div class="wizard-panel" data-panel="6">
-        <h3 class="wizard-panel-title">Booking Summary</h3>
+        <h3 class="wizard-panel-title panel-title-spaced"><i class="fa-solid fa-receipt panel-icon"></i> Booking Summary</h3>
         <div class="summary-card" id="summaryCard"></div>
-        <button type="button" class="btn btn-gold btn-block btn-shine" id="confirmBookingBtn">
+        <button type="button" class="btn btn-gold btn-block btn-shine btn-pulse" id="confirmBookingBtn">
           <i class="fa-regular fa-calendar-check"></i> Confirm Appointment
         </button>
       </div>

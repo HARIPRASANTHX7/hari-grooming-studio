@@ -238,9 +238,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const servicesGrid = document.getElementById('servicesGrid');
   function renderServiceCards() {
     servicesGrid.innerHTML = '';
-    getServices().filter(s => s.enabled !== false).forEach(s => {
+    getServices().filter(s => s.enabled !== false).forEach((s, i) => {
       const card = document.createElement('div');
-      card.className = 'service-card';
+      card.className = 'service-card reveal';
+      card.style.transitionDelay = (i % 4) * 80 + 'ms';
       card.innerHTML = `
         <div class="service-icon"><i class="fa-solid ${s.icon}"></i></div>
         <h3>${escapeHtml(s.name)}</h3>
@@ -269,9 +270,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const barbersGrid = document.getElementById('barbersGrid');
   function renderBarberCards() {
     barbersGrid.innerHTML = '';
-    getBarbers().forEach(b => {
+    getBarbers().forEach((b, i) => {
       const card = document.createElement('div');
-      card.className = 'barber-card';
+      card.className = 'barber-card reveal';
+      card.style.transitionDelay = (i % 4) * 80 + 'ms';
       card.innerHTML = `
         <div class="barber-photo">
           <img src="${b.img}" alt="${escapeHtml(b.name)}, ${escapeHtml(b.role)} at Hari Grooming Studio" loading="lazy">
@@ -300,7 +302,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const galleryGrid = document.getElementById('galleryGrid');
   GALLERY.forEach((g, i) => {
     const item = document.createElement('div');
-    item.className = `gallery-item ${g.cls}`.trim();
+    item.className = `gallery-item reveal ${g.cls}`.trim();
+    item.style.transitionDelay = (i % 4) * 70 + 'ms';
     item.dataset.index = i;
     item.innerHTML = `
       <img src="${g.img}" alt="${escapeHtml(g.title)} — ${escapeHtml(g.cat)} at Hari Grooming Studio" loading="lazy"
@@ -441,12 +444,13 @@ document.addEventListener('DOMContentLoaded', () => {
   ========================================================= */
   const wizardState = { serviceId: null, barberId: null, date: null, time: null, name: '', phone: '', message: '' };
   let currentStep = 1;
-  const TOTAL_STEPS = 6;
+  const TOTAL_STEPS = 3; // Step 1: Service + Barber · Step 2: Date + Time · Step 3: Details + Confirm
 
   const wizardStepsEls = document.querySelectorAll('.wizard-step');
   const wizardPanels = document.querySelectorAll('.wizard-panel');
   const wizardBackBtn = document.getElementById('wizardBackBtn');
   const wizardNextBtn = document.getElementById('wizardNextBtn');
+  const wizardLineFills = document.querySelectorAll('.wizard-line-fill');
 
   function goToStep(n) {
     currentStep = n;
@@ -455,9 +459,11 @@ document.addEventListener('DOMContentLoaded', () => {
       el.classList.toggle('active', s === n);
       el.classList.toggle('done', s < n);
     });
+    // Animate the connecting line filling in as the user progresses
+    wizardLineFills.forEach((fill, i) => { fill.style.width = (i < n - 1) ? '100%' : '0%'; });
+
     wizardPanels.forEach(el => el.classList.toggle('active', parseInt(el.dataset.panel, 10) === n));
     wizardBackBtn.disabled = n === 1;
-    wizardNextBtn.innerHTML = n === TOTAL_STEPS ? 'Review Above <i class="fa-solid fa-check"></i>' : 'Next <i class="fa-solid fa-arrow-right"></i>';
     wizardNextBtn.style.display = n === TOTAL_STEPS ? 'none' : 'inline-flex';
     document.getElementById('confirmBookingBtn').style.display = n === TOTAL_STEPS ? 'inline-flex' : 'none';
     renderWizardStep();
@@ -465,11 +471,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderWizardStep() {
-    if (currentStep === 1) renderServiceStep();
-    if (currentStep === 2) renderBarberStep();
-    if (currentStep === 3) renderDateStep();
-    if (currentStep === 4) renderTimeStep();
-    if (currentStep === 6) renderSummaryStep();
+    if (currentStep === 1) { renderServiceStep(); renderBarberStep(); }
+    if (currentStep === 2) { renderDateStep(); renderTimeStep(); }
+    if (currentStep === 3) { renderSummaryStep(); }
+  }
+
+  /* Stagger helper: fades grid items in one after another */
+  function applyStagger(container, selector) {
+    container.querySelectorAll(selector).forEach((el, i) => {
+      el.style.animationDelay = (i * 55) + 'ms';
+      el.classList.add('stagger-in');
+    });
   }
 
   function renderServiceStep() {
@@ -489,6 +501,7 @@ document.addEventListener('DOMContentLoaded', () => {
       card.addEventListener('click', () => { wizardState.serviceId = s.id; renderServiceStep(); });
       grid.appendChild(card);
     });
+    applyStagger(grid, '.pick-card');
   }
 
   function renderBarberStep() {
@@ -518,6 +531,7 @@ document.addEventListener('DOMContentLoaded', () => {
       card.addEventListener('click', () => { wizardState.barberId = b.id; renderBarberStep(); });
       grid.appendChild(card);
     });
+    applyStagger(grid, '.pick-card');
   }
 
   function renderDateStep() {
@@ -534,16 +548,18 @@ document.addEventListener('DOMContentLoaded', () => {
         <span class="dom">${d.getDate()}</span>
         <span class="mon">${d.toLocaleDateString('en-IN', { month: 'short' })}</span>
       `;
-      chip.addEventListener('click', () => { wizardState.date = dateStr; wizardState.time = null; renderDateStep(); });
+      // Selecting a date instantly refreshes the time slots below — no extra step needed
+      chip.addEventListener('click', () => { wizardState.date = dateStr; wizardState.time = null; renderDateStep(); renderTimeStep(); });
       strip.appendChild(chip);
     }
+    applyStagger(strip, '.date-chip');
   }
 
   function renderTimeStep() {
     const wrap = document.getElementById('slotGroups');
     wrap.innerHTML = '';
     if (!wizardState.date) {
-      wrap.innerHTML = '<p style="color:var(--text-muted)">Please choose a date first (go back to Step 3).</p>';
+      wrap.innerHTML = '<p style="color:var(--text-muted)">Pick a date above to see available times.</p>';
       return;
     }
     const barberId = wizardState.barberId || 'any';
@@ -564,6 +580,7 @@ document.addEventListener('DOMContentLoaded', () => {
         grid.appendChild(btn);
       });
       wrap.appendChild(grid);
+      applyStagger(grid, '.slot');
     });
   }
 
@@ -577,18 +594,34 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="summary-row"><span>Date</span><strong>${wizardState.date ? formatDateLong(wizardState.date) : '—'}</strong></div>
       <div class="summary-row"><span>Time</span><strong>${wizardState.time ? formatTime12(wizardState.time) : '—'}</strong></div>
       <div class="summary-row"><span>Duration</span><strong>${service ? service.duration + ' minutes' : '—'}</strong></div>
-      <div class="summary-row"><span>Customer</span><strong>${escapeHtml(wizardState.name)}</strong></div>
-      <div class="summary-row"><span>Mobile</span><strong>${escapeHtml(wizardState.phone)}</strong></div>
+      <div class="summary-row"><span>Customer</span><strong>${escapeHtml(wizardState.name) || '—'}</strong></div>
+      <div class="summary-row"><span>Mobile</span><strong>${escapeHtml(wizardState.phone) || '—'}</strong></div>
       <div class="summary-row total"><span>Total Price</span><strong>₹${service ? service.price : 0}</strong></div>
     `;
   }
 
+  // Live summary updates as the customer types their details
+  ['custName', 'custPhone', 'custMessage'].forEach(id => {
+    document.getElementById(id).addEventListener('input', (e) => {
+      e.target.classList.remove('invalid');
+      wizardState.name = document.getElementById('custName').value.trim();
+      wizardState.phone = document.getElementById('custPhone').value.trim();
+      wizardState.message = document.getElementById('custMessage').value.trim();
+      if (currentStep === 3) renderSummaryStep();
+    });
+  });
+
   function validateStep(n) {
-    if (n === 1 && !wizardState.serviceId) { alert('Please choose a service to continue.'); return false; }
-    if (n === 2 && !wizardState.barberId) { alert('Please choose a barber (or "Any Available") to continue.'); return false; }
-    if (n === 3 && !wizardState.date) { alert('Please choose a date to continue.'); return false; }
-    if (n === 4 && !wizardState.time) { alert('Please choose a time slot to continue.'); return false; }
-    if (n === 5) return validateDetailsForm();
+    if (n === 1) {
+      if (!wizardState.serviceId) { alert('Please choose a service to continue.'); return false; }
+      if (!wizardState.barberId) { alert('Please choose a barber (or "Any Available") to continue.'); return false; }
+      return true;
+    }
+    if (n === 2) {
+      if (!wizardState.date) { alert('Please choose a date to continue.'); return false; }
+      if (!wizardState.time) { alert('Please choose a time slot to continue.'); return false; }
+      return true;
+    }
     return true;
   }
 
@@ -623,10 +656,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   wizardBackBtn.addEventListener('click', () => { if (currentStep > 1) goToStep(currentStep - 1); });
 
-  ['custName', 'custPhone'].forEach(id => {
-    document.getElementById(id).addEventListener('input', (e) => e.target.classList.remove('invalid'));
-  });
-
   goToStep(1);
 
   /* ---------------------------------------------------
@@ -637,6 +666,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const successResult = document.getElementById('successResult');
 
   document.getElementById('confirmBookingBtn').addEventListener('click', () => {
+    if (!validateDetailsForm()) {
+      document.getElementById('custName').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
     const service = getServices().find(s => s.id === wizardState.serviceId);
     const barber = wizardState.barberId === 'any' ? null : getBarbers().find(b => b.id === wizardState.barberId);
 
